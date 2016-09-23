@@ -15,7 +15,7 @@ date_default_timezone_set ("Asia/Almaty");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+/*
 $rows = $dbc->dbselect(array(
     "table"=>"bento_users2",
     "select"=>"*"));
@@ -23,7 +23,7 @@ foreach($rows as $row){
     if($row['id']>90){
         echo "<p>";
         print_r($row);
-        /*$dbc->element_create("users",array(
+        $dbc->element_create("users",array(
             "name" => $row['name'],
             "login" => $row['login'],
             "password" => md5('123456'.SECRET),
@@ -44,6 +44,18 @@ foreach($rows as $row){
             $dbc->element_create("r_user_role",array(
                 "user_id" => $u_id,
                 "role_id" => $row2['role_id']));
-        }*/
+        }
     }
 }
+*/
+/*define("SECRET", 'IIib@v~X');
+$rows = $dbc->dbselect(array(
+    "table"=>"users",
+    "select"=>"*"));
+foreach($rows as $row){
+    if($row['id']>90){
+        $dbc->element_update('users',$row['id'],array(
+            "password" => md5('123456'.SECRET)
+        ));
+    }
+}*/
