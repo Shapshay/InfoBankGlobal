@@ -25,15 +25,47 @@ function setUserInArt($u_id, $art_id) {
         return $row['id'];
     }
     else{
-        return 0;
+        $rows = $dbc->dbselect(array(
+                "table"=>"user_art",
+                "select"=>"id",
+                "where"=>"user_id = '".$u_id."' AND art_id = '".$art_id."' AND close = 1 AND (date BETWEEN '".date("Y-m-d H:i", strtotime("-30 minute"))."'  AND  '".date("Y-m-d H:i")."')",
+                "limit"=>"1"
+            )
+        );
+        $numRows = $dbc->count;
+        if ($numRows > 0) {
+            $row = $rows[0];
+            return $row['id'];
+        }
+        else {
+            return 0;
+        }
     }
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-$_POST['u_id'] = '2';
-$_POST['control_id'] = '2';
-$arr_err = array(21,23);
+
+// SOAP std в массив
+function stdToArray($obj){
+    $rc = (array)$obj;
+    foreach($rc as $key => &$field){
+        if(is_object($field))$field = $this->stdToArray($field);
+    }
+    return $rc;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+//$_POST['u_id'] = '2';
+//$_POST['control_id'] = '2';
+//$arr_err = array(21,23);
 
 if(isset($_POST['u_id'])){
+    $oper_row = $dbc->element_find_by_field('users','login', $_POST['u_id']);
+    $control_row = $dbc->element_find_by_field('users','login', $_POST['control_id']);
+
+
+    $base2 = base64_decode($_POST['errs']);
+    $json2 = json_decode($base2);
+    $arr_err = stdToArray($json2);
     //$arr_err = $_POST['errs'];
     $i=0;
     $where = '';
@@ -65,9 +97,9 @@ if(isset($_POST['u_id'])){
     foreach ($art_arr as $art_id) {
         if(setUserInArt($_POST['u_id'], $art_id)==0){
             $dbc->element_create("user_art",array(
-                "user_id" => $_POST['u_id'],
+                "user_id" => $oper_row['id'],
                 "art_id" => $art_id,
-                "control_id"=>$_POST['control_id'],
+                "control_id"=>$control_row['id'],
                 "date" => 'NOW()'));
         }
     }
