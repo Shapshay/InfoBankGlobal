@@ -1,52 +1,83 @@
+<link href="adm/inc/will_pickdate/style.css" media="screen" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="adm/inc/will_pickdate/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="adm/inc/will_pickdate/will_pickdate.js"></script>
 <script>
 $(document).ready(function() {
-    $('#stat_table').DataTable( {
+    table = $('#stat_table').DataTable( {
         "lengthMenu": [[100, 200, 500, -1], [100, 200, 500, "Все"]]
     } );
 
-    $('.checkAll').on('click', function(e) {
-        $('.cb-element').attr('checked', $(e.target).prop('checked'));
-        if($(e.target).prop('checked')){
-            $('.cb-element').prop('checked', true);
-        }
+    $('#date_start').will_pickdate({
+        format: 'd-m-Y',
+        inputOutputFormat: 'd-m-Y',
+        days: ['Понедельник', 'Вторник', 'Среда', 'Четверг','Пятница', 'Суббота', 'Воскресенье'],
+        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+        timePicker: false,
+        timePickerOnly: false,
+        militaryTime: false,
+        allowEmpty:true ,
+        yearsPerPage:10
+    });
+
+    $('#date_end').will_pickdate({
+        format: 'd-m-Y',
+        inputOutputFormat: 'd-m-Y',
+        days: ['Понедельник', 'Вторник', 'Среда', 'Четверг','Пятница', 'Суббота', 'Воскресенье'],
+        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+        timePicker: false,
+        timePickerOnly: false,
+        militaryTime: false,
+        allowEmpty:true ,
+        yearsPerPage:10
     });
 } );
 
-function changeComp() {
-    var comp_id = $("#comp_id option:selected").val();
-    $.post("modules/user_comp/list_comp_u.php", {comp_id:comp_id},
-            function(data){
-                //alert(data);
-                var obj = jQuery.parseJSON(data);
-                if(obj.result=='OK'){
-                    $('#u_table').html(obj.html);
-                }
-                else{
-                    swal("Ошибка Сервера!", "Объект ненайден !", "error");
-                }
-            });
+function changeOffice(){
+    changeOperType();
 }
 
-function addUComp() {
-    var comp_id = $("#comp_id option:selected").val();
-    var users = new Array();
-    var ROOT_ID = {ROOT_ID};
-    $('.cb-element').each(function(i,elem) {
-        if($(elem).prop('checked')){
-            users.push(this.id);
-        }
-    });
-    console.log(users);
-    $.post("modules/user_comp/add_comp_u.php", {comp_id:comp_id, users:users, ROOT_ID:ROOT_ID},
+function changeOperType(){
+    var oper_type = $('#prod option:selected').val();
+    var office_id = $('#office_id option:selected').val();
+    $('#table_rows').html('');
+    $.post("modules/stat1/change_type.php", {oper_type: oper_type, office_id: office_id},
             function(data){
-                //alert(data);
                 var obj = jQuery.parseJSON(data);
                 if(obj.result=='OK'){
-                    $('#u_table').html(obj.html);
-                    swal("Успешно", "Пользователям назначен комплекс задач.", "success");
+                    $('#oper_id').html(obj.html);
                 }
                 else{
-                    swal("Ошибка Сервера!", "Объект ненайден !", "error");
+                    swal("Ошибка Сервера!", "Сбой записи !", "error");
+                }
+
+            });
+
+}
+function ShowStatTable(){
+    var oper_type = $('#prod option:selected').val();
+    var oper_id = $('#oper_id option:selected').val();
+    var office_id = $('#office_id option:selected').val();
+    var date_start = $('#date_start').val();
+    var date_end = $('#date_end').val();
+    var limit = $('#limit option:selected').val();
+    //alert(limit);
+    $('#table_rows').html('');
+    $('#waitGear').show();
+    $.post("modules/stat1/show_stat.php", {office_id:office_id, oper_type: oper_type, oper_id:oper_id, date_start:date_start,date_end:date_end,limit:limit},
+            function(data){
+                //alert(data);
+
+                var obj = jQuery.parseJSON(data);
+                if(obj.result=='OK'){
+                    table.destroy();
+                    $('#table_rows').html(obj.html);
+                    console.log(obj.sql);
+                    table = $('#stat_table').DataTable( {
+                        "lengthMenu": [[50, 100, 500, -1], [50, 100, 500, "Все"]]
+                    } );
+                }
+                else{
+                    swal("Ошибка Сервера!", "Сбой записи !", "error");
                 }
             });
 }

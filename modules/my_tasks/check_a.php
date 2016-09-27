@@ -10,6 +10,38 @@ ini_set("display_errors", 1);
 require_once("../../adm/inc/BDFunc.php");
 $dbc = new BDFunc;
 
+// получение страницы через POST
+function post_content ($url,$postdata) {
+    $uagent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)";
+
+    $ch = curl_init( $url );
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_ENCODING, "");
+    curl_setopt($ch, CURLOPT_USERAGENT, $uagent);  // useragent
+    curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+    curl_setopt($ch, CURLOPT_COOKIEJAR, "inc/coo.txt");
+    curl_setopt($ch, CURLOPT_COOKIEFILE,"inc/coo.txt");
+
+    $content = curl_exec( $ch );
+    $err     = curl_errno( $ch );
+    $errmsg  = curl_error( $ch );
+    $header  = curl_getinfo( $ch );
+    curl_close( $ch );
+
+    $header['errno']   = $err;
+    $header['errmsg']  = $errmsg;
+    $header['content'] = $content;
+
+    return $header;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 $a_row = $dbc->element_find('answers',$_POST['a_id']);
 
 if($a_row['correct']==1){
@@ -57,6 +89,14 @@ if($a_row['correct']==1){
         $dbc->element_fields_update('user_art',
             " WHERE user_id = ".$_POST['u_id']." AND art_id = ".$_POST['comp_id'],
             array("close" => 1));
+
+        // отправка в бенто
+        $user_row = $dbc->element_find('users',$_POST['u_id']);
+        $url = 'https://mybento.kz/inc/ajax/block_info_del.php';
+        $postdata = 'block=1&login='.$user_row['login'].'&art_id='.$_POST['comp_id'];
+        $result = post_content ($url,$postdata);
+
+
     }
 
     $q_row = $dbc->element_find('questions',$_POST['q_id']);

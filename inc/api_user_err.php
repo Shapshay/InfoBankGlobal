@@ -28,7 +28,7 @@ function setUserInArt($u_id, $art_id) {
         $rows = $dbc->dbselect(array(
                 "table"=>"user_art",
                 "select"=>"id",
-                "where"=>"user_id = '".$u_id."' AND art_id = '".$art_id."' AND close = 1 AND (date BETWEEN '".date("Y-m-d H:i", strtotime("-30 minute"))."'  AND  '".date("Y-m-d H:i")."')",
+                "where"=>"user_id = '".$u_id."' AND art_id = '".$art_id."' AND (date BETWEEN '".date("Y-m-d H:i", strtotime("-30 minute"))."'  AND  '".date("Y-m-d H:i")."')",
                 "limit"=>"1"
             )
         );
