@@ -23,6 +23,7 @@ if(isset($_POST['oper_type'])){
         )
     );
     if(is_array($rows)){
+        $oper_rows.='<option value="0">Все';
         foreach($rows as $row){
             $this_role = explode(",",$row['role']);
             if(in_array($_POST['oper_type'],$this_role)){

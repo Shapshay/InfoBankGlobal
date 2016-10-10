@@ -39,7 +39,6 @@ if(isset($_POST['oper_type'])){
 			AND DATE_FORMAT(user_art.date,'%Y%m%d')<='".date("Ymd",strtotime($_POST['date_end']))."'",
         "order"=>"user_art.date",
         "order_type"=>"ASC",
-        "group"=>"user_art.id",
         "limit"=>$_POST['limit']));
     $sql = $dbc->outsql;
     $numRows = $dbc->count;
