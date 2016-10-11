@@ -29,7 +29,7 @@ if(isset($_POST['oper_type'])){
     $html = '';
     $rows = $dbc->dbselect(array(
         "table"=>"user_art",
-        "select"=>"DISTINCT DATE_FORMAT(user_art.date,'%Y-%m-%d %H:%i') as date,
+        "select"=>"COUNT(DISTINCT DATE_FORMAT(user_art.date,'%Y-%m-%d %H:%i')) as kol,
             users.name as oper,
             articles.title as art",
         "joins"=>"LEFT OUTER JOIN users ON user_art.user_id = users.id
@@ -37,7 +37,8 @@ if(isset($_POST['oper_type'])){
         "where"=>"users.office_id = ".$_POST['office_id'].$sql_user.
             " AND DATE_FORMAT(user_art.date,'%Y%m%d')>='".date("Ymd",strtotime($_POST['date_start']))."'
 			AND DATE_FORMAT(user_art.date,'%Y%m%d')<='".date("Ymd",strtotime($_POST['date_end']))."'",
-        "order"=>"user_art.date",
+        "group"=>"users.name, articles.title",
+        "order"=>"users.name",
         "order_type"=>"ASC",
         "limit"=>$_POST['limit']));
     $sql = $dbc->outsql;
@@ -48,7 +49,7 @@ if(isset($_POST['oper_type'])){
             $html.= '<tr>
                     <td>'.$row['oper'].'</td>
                     <td>'.$row['art'].'</td>
-                    <td>'.date("d-m-Y H:i",strtotime($row['date'])).'</td>
+                    <td>'.$row['kol'].'</td>
                     </tr>';
         }
     }

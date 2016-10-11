@@ -1,6 +1,6 @@
 <?php
 # SETTINGS #############################################################################
-$moduleName = "stat1";
+$moduleName = "stat3";
 $prefix = "./modules/".$moduleName."/";
 
 $tpl->define(array(
@@ -56,17 +56,15 @@ $tpl->assign("OPERS_ROWS", $oper_rows);
 
 $rows = $dbc->dbselect(array(
 		"table"=>"user_art",
-		"select"=>"
-            DISTINCT user_art.date as date,
+		"select"=>"COUNT(DISTINCT DATE_FORMAT(user_art.date,'%Y-%m-%d %H:%i')) as kol,
             users.name as oper,
             articles.title as art",
         "joins"=>"LEFT OUTER JOIN users ON user_art.user_id = users.id
         	LEFT OUTER JOIN articles ON user_art.art_id = articles.id",
         "where"=>"users.office_id = ".ROOT_OFFICE,
-        "order"=>"user_art.date",
+        "order"=>"users.name",
         "order_type"=>"ASC",
-        "group"=>"user_art.id",
-        "limit"=>100
+        "group"=>"users.name, articles.title"
 	)
 );
 //echo $dbc->outsql;
@@ -74,7 +72,7 @@ foreach($rows as $row){
 
     $tpl->assign("STAT_NAME", $row['oper']);
     $tpl->assign("STAT_ART", $row['art']);
-    $tpl->assign("STAT_DATE", date("d-m-Y H:i",strtotime($row['date'])));
+    $tpl->assign("STAT_DATE", $row['kol']);
     
 
 	$tpl->parse("USER_ROWS", ".".$moduleName."user_rows");
