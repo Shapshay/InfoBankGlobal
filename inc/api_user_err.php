@@ -95,7 +95,7 @@ if(isset($_POST['u_id'])){
     //print_r($art_arr);
     //echo "<br>";
     foreach ($art_arr as $art_id) {
-        if(setUserInArt($_POST['u_id'], $art_id)==0){
+        if(setUserInArt($oper_row['id'], $art_id)==0){
             $dbc->element_create("user_art",array(
                 "user_id" => $oper_row['id'],
                 "art_id" => $art_id,
