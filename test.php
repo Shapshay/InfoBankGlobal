@@ -15,17 +15,15 @@ date_default_timezone_set ("Asia/Almaty");
 
 //echo date("Y-m-d H:i", strtotime("-30 minute"));
 $rows = $dbc->dbselect(array(
-        "table"=>"user_art",
-        "select"=>"id",
-        "where"=>"user_id = '2' AND art_id = '36' AND close = 1 AND (date BETWEEN '".date("Y-m-d H:i", strtotime("-30 minute"))."'  AND  '".date("Y-m-d H:i")."')",
-        "limit"=>"1"
+        "table"=>"cour_polis",
+        "select"=>"*"
     )
 );
-echo $dbc->outsql."<p>";
 $numRows = $dbc->count;
 if ($numRows > 0) {
-    $row = $rows[0];
-    echo $row['id'];
+    foreach ($rows as $row){
+        
+    }
 }
 else {
     echo 0;
